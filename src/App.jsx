@@ -6,7 +6,7 @@ import {
   Video, CircleDollarSign, Info, Trophy, SlidersHorizontal,
   BarChart3, ListChecks, CalendarRange, Rocket, ChevronRight, ChevronLeft, Check,
   MessageCircle, Camera, Gift, Globe, Bot, Award, UserPlus, Layers, Repeat, BookOpen, MousePointerClick, Quote, ChevronDown, CircleDot,
-  ClipboardCheck, Compass, Download
+  ClipboardCheck, Compass, Download, Zap, GraduationCap
 } from "lucide-react";
 
 // ---------- tokens ----------
@@ -338,46 +338,74 @@ function PartDivider({ number, title, description }) {
 
 const RECOMMENDATIONS = [
   {
+    icon: Video,
+    title: "Mais reels de topo de funil",
+    objetivo: "Aumentar o saldo líquido de seguidores, ganhando mais do que perdemos.",
+    acao: "Produzir reels sem foco em agendamento, pensados para quem ainda não nos conhece.",
+    impacto: ["Mais alcance a não seguidores", "Crescimento líquido da comunidade"],
+  },
+  {
+    icon: Camera,
+    title: "Reservar dias de gravação",
+    objetivo: "Sustentar a produção de mais reels.",
+    acao: "Bloquear um dia fixo por mês para gravações com a equipa.",
+    impacto: ["Conteúdo sempre pronto", "Menos interrupções na clínica"],
+  },
+  {
+    icon: Users,
+    title: "Mostrar mais a equipa",
+    objetivo: "Aproveitar o formato que mais gera reação do público.",
+    acao: "Produzir mais vídeos com rostos da equipa e bastidores do dia a dia.",
+    impacto: ["Mais proximidade com o público", "Maior confiança na marca"],
+  },
+  {
+    icon: CircleDollarSign,
+    title: "Reativar os anúncios",
+    objetivo: "Transformar interesse em novas consultas.",
+    acao: "Assim que a conta Meta for regularizada, lançar campanhas focadas em geração de leads.",
+    impacto: ["Mais leads qualificados", "Melhor uso do investimento"],
+  },
+  {
+    icon: Bot,
+    title: "Preparar chat de atendimento automático",
+    objetivo: "Melhorar a experiência de quem contacta a clínica, com resposta rápida e online.",
+    acao: "Ter um assistente automático pronto a responder de imediato, sobretudo quando o fluxo de leads dos anúncios arrancar.",
+    impacto: ["Resposta imediata a leads", "Melhor experiência do utilizador"],
+  },
+  {
+    icon: Zap,
+    title: "Reels Teste como alcance grátis",
+    objetivo: "Alcançar não seguidores sem gastar em notoriedade.",
+    acao: "Testar os reels antes de publicar, e reservar o orçamento só para campanhas de leads.",
+    impacto: ["Alcance orgânico extra", "Investimento mais eficiente"],
+  },
+  {
+    icon: GraduationCap,
+    title: "Formação em gestão de leads",
+    objetivo: "Converter mais contactos em consultas marcadas.",
+    acao: "Reforçar o treino da equipa em resposta rápida e follow-up.",
+    impacto: ["Resposta mais rápida", "Mais consultas marcadas"],
+  },
+  {
     icon: ClipboardCheck,
-    title: "Validação antecipada dos conteúdos",
-    objetivo: "Garantir uma comunicação consistente e evitar atrasos nas publicações.",
-    acao: "Os conteúdos continuarão a ser preparados com antecedência e disponibilizados na plataforma de validação. Sempre que possível, recomendamos que a validação seja feita antecipadamente, permitindo manter o calendário de publicações sem interrupções e com maior previsibilidade.",
-    impacto: ["Publicações mais consistentes", "Maior organização", "Melhor aproveitamento do planeamento mensal"],
+    title: "Validação antecipada",
+    objetivo: "Garantir comunicação consistente, sem atrasos.",
+    acao: "Validar os conteúdos assim que disponíveis no Rella.",
+    impacto: ["Publicações mais consistentes", "Calendário sem interrupções"],
   },
   {
     icon: Compass,
     title: "Expansão para o TikTok",
-    objetivo: "Alcançar novos públicos e aumentar a notoriedade da Clínica Sorridente.",
-    acao: "Foi criada a conta oficial da clínica no TikTok. Identificámos uma forte procura por conteúdos relacionados com saúde oral nesta plataforma e iremos iniciar uma estratégia de conteúdos educativos e institucionais adaptados a este formato.",
-    impacto: ["Maior alcance orgânico", "Captação de novos públicos", "Reforço da autoridade digital da clínica"],
-  },
-  {
-    icon: Video,
-    title: "Reforço da estratégia de vídeo",
-    objetivo: "Aumentar o alcance orgânico e a descoberta da clínica.",
-    acao: "Vamos aumentar a produção e publicação de reels, aproveitando também a nova funcionalidade Reels Teste da Meta, que permite validar conteúdos junto de pessoas que ainda não conhecem a clínica antes da publicação definitiva.",
-    impacto: ["Maior alcance", "Mais visualizações", "Crescimento da comunidade", "Maior probabilidade de novos contactos"],
-  },
-  {
-    icon: CircleDollarSign,
-    title: "Intensificação do tráfego pago",
-    objetivo: "Transformar o interesse gerado pelos conteúdos em novas consultas.",
-    acao: "Após a regularização das integrações da conta Meta, iniciaremos campanhas permanentes de geração de leads para implantes, reabilitação oral e consultas de avaliação. A equipa já recebeu formação para o tratamento destes contactos, permitindo uma resposta mais rápida e organizada.",
-    impacto: ["Aumento de leads qualificadas", "Mais consultas de avaliação", "Melhor aproveitamento do investimento em publicidade"],
+    objetivo: "Alcançar novos públicos e aumentar a notoriedade.",
+    acao: "Publicar conteúdo educativo adaptado à plataforma, com a conta já criada.",
+    impacto: ["Alcance a novos públicos", "Reforço da autoridade digital"],
   },
   {
     icon: RotateCcw,
-    title: "Recuperação de oportunidades",
-    objetivo: "Melhorar a retenção de pacientes e reduzir oportunidades perdidas.",
-    acao: "Identificámos um número significativo de consultas canceladas sem remarcação para o mesmo período. Propomos realizar uma análise conjunta deste processo para compreender os principais motivos e desenvolver ações que aumentem a taxa de recuperação destes pacientes, como contacto de acompanhamento, campanhas de reativação, lembretes automáticos e novos processos de remarcação.",
-    impacto: ["Melhor aproveitamento da agenda", "Redução de vagas perdidas", "Maior retenção de pacientes"],
-  },
-  {
-    icon: Users,
-    title: "Crescimento da comunidade digital",
-    objetivo: "Aumentar o reconhecimento da marca de forma consistente.",
-    acao: "Embora várias metas tenham sido atingidas, identificámos uma oportunidade para acelerar o crescimento da comunidade nas redes sociais. A combinação entre conteúdos em vídeo, Reels Teste, TikTok e campanhas de tráfego pago deverá contribuir para aumentar significativamente este indicador nos próximos meses.",
-    impacto: ["Crescimento da comunidade", "Maior notoriedade da marca", "Aumento do alcance orgânico"],
+    title: "Recuperação de pacientes cancelados",
+    objetivo: "Reduzir vagas perdidas e melhorar a retenção.",
+    acao: "Criar contacto de acompanhamento e lembretes automáticos para quem cancelou.",
+    impacto: ["Menos vagas perdidas", "Mais pacientes recuperados"],
   },
 ];
 
@@ -391,12 +419,12 @@ const NAV = [
 // dashboard executivo: contagens reais, derivadas das implementações listadas
 // infraestrutura de marketing implementada, ao longo dos 5 meses desde o início do Marketing 360 (fevereiro a junho)
 const INFRA_KPIS = [
-  { icon: CalendarRange, label: "Meses de implementação", value: 5 },
-  { icon: Target, label: "Áreas estratégicas desenvolvidas", value: 5 },
-  { icon: Globe, label: "Plataformas estruturadas", value: 5 },
-  { icon: RotateCcw, label: "Processos implementados", value: 5 },
-  { icon: Gift, label: "Campanhas desenvolvidas", value: 2 },
-  { icon: Bot, label: "Ferramentas configuradas", value: 5 },
+  { icon: CalendarRange, label: "Meses de implementação", value: 5, detalhe: "Fevereiro, Março, Abril, Maio e Junho" },
+  { icon: Target, label: "Áreas estratégicas desenvolvidas", value: 5, detalhe: "Comunicação, Produção, Captação, Website e Automações" },
+  { icon: Globe, label: "Plataformas estruturadas", value: 5, detalhe: "WhatsApp Business, Instagram, Meta Ads, Website e Rella" },
+  { icon: RotateCcw, label: "Processos implementados", value: 5, detalhe: "Atendimento, respostas automáticas, planeamento editorial, gestão de leads e formação da equipa" },
+  { icon: Gift, label: "Campanhas desenvolvidas", value: 2, detalhe: "Dia da Mãe e Dia da Criança" },
+  { icon: Bot, label: "Ferramentas configuradas", value: 5, detalhe: "WhatsApp Business, mensagens automáticas, formulário Meta, Rella e Reels Teste" },
 ];
 
 const INFRA_CONSTRUIDO = [
@@ -1702,7 +1730,8 @@ export default function MarketingDashboard() {
                         <k.icon size={15} color={blue} strokeWidth={2} />
                       </div>
                       <div style={{ fontFamily: body, fontSize: 30, fontWeight: 800, color: ink, fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" }}>{k.value}</div>
-                      <div style={{ fontFamily: body, fontSize: 11.5, color: muted, marginTop: 5, lineHeight: 1.4 }}>{k.label}</div>
+                      <div style={{ fontFamily: body, fontSize: 11.5, color: muted, marginTop: 5, lineHeight: 1.4, fontWeight: 600 }}>{k.label}</div>
+                      <div style={{ fontFamily: body, fontSize: 10.5, color: mutedSoft, marginTop: 6, lineHeight: 1.45, paddingTop: 6, borderTop: `1px solid ${border}` }}>{k.detalhe}</div>
                     </div>
                   ))}
                 </div>
@@ -2231,34 +2260,34 @@ export default function MarketingDashboard() {
             </p>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: 20 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(290px, 1fr))", gap: 16 }}>
             {RECOMMENDATIONS.map((r) => (
               <div key={r.title} style={{
                 background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.14)",
-                backdropFilter: "blur(6px)", borderRadius: 18, padding: "28px 28px"
+                backdropFilter: "blur(6px)", borderRadius: 16, padding: "22px 22px"
               }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 11, marginBottom: 16 }}>
                   <div style={{
-                    width: 40, height: 40, borderRadius: 11, background: "rgba(37,99,235,0.25)",
+                    width: 34, height: 34, borderRadius: 10, background: "rgba(37,99,235,0.25)",
                     border: "1px solid rgba(37,99,235,0.4)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0
                   }}>
-                    <r.icon size={18} color="#8FB2FF" strokeWidth={2} />
+                    <r.icon size={16} color="#8FB2FF" strokeWidth={2} />
                   </div>
-                  <div style={{ fontFamily: display, fontSize: 16.5, fontWeight: 700, color: "#fff", letterSpacing: "-0.01em" }}>{r.title}</div>
+                  <div style={{ fontFamily: display, fontSize: 14.5, fontWeight: 700, color: "#fff", letterSpacing: "-0.01em", lineHeight: 1.25 }}>{r.title}</div>
                 </div>
 
-                <div style={{ fontFamily: body, fontSize: 10.5, fontWeight: 700, color: "#8FB2FF", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 5 }}>Objetivo</div>
-                <p style={{ fontFamily: body, fontSize: 12.5, color: "#D7DFEC", lineHeight: 1.6, margin: "0 0 16px" }}>{r.objetivo}</p>
+                <div style={{ fontFamily: body, fontSize: 10, fontWeight: 700, color: "#8FB2FF", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>Objetivo</div>
+                <p style={{ fontFamily: body, fontSize: 12, color: "#D7DFEC", lineHeight: 1.45, margin: "0 0 12px" }}>{r.objetivo}</p>
 
-                <div style={{ fontFamily: body, fontSize: 10.5, fontWeight: 700, color: "#8FB2FF", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 5 }}>Ação</div>
-                <p style={{ fontFamily: body, fontSize: 12.5, color: "#AEBBD0", lineHeight: 1.65, margin: "0 0 16px" }}>{r.acao}</p>
+                <div style={{ fontFamily: body, fontSize: 10, fontWeight: 700, color: "#8FB2FF", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>Ação</div>
+                <p style={{ fontFamily: body, fontSize: 12, color: "#AEBBD0", lineHeight: 1.45, margin: "0 0 12px" }}>{r.acao}</p>
 
-                <div style={{ fontFamily: body, fontSize: 10.5, fontWeight: 700, color: "#8FB2FF", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Impacto esperado</div>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                <div style={{ fontFamily: body, fontSize: 10, fontWeight: 700, color: "#8FB2FF", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Impacto esperado</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                   {r.impacto.map(item => (
                     <span key={item} style={{
-                      display: "inline-flex", alignItems: "center", gap: 5, fontFamily: body, fontSize: 11.5, fontWeight: 600,
-                      color: "#B9F0CE", background: "rgba(34,197,94,0.12)", border: "1px solid rgba(34,197,94,0.25)", padding: "4px 11px", borderRadius: 999
+                      display: "inline-flex", alignItems: "center", gap: 6, fontFamily: body, fontSize: 11.5, fontWeight: 600,
+                      color: "#B9F0CE", background: "rgba(34,197,94,0.12)", border: "1px solid rgba(34,197,94,0.25)", padding: "5px 12px", borderRadius: 999, width: "fit-content"
                     }}>
                       <Check size={10} strokeWidth={3} /> {item}
                     </span>
