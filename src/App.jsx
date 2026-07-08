@@ -52,6 +52,28 @@ const METAS = [
 ];
 const BONUS_METRIC = { key: "visualizacoes", icon: Eye, label: "Visualizações", achieved: growth.visualizacoes };
 
+const METAS_CONTRATUAIS = [
+  { nome: "Alcance das publicações", pct: 100, tone: "green", statusLabel: "Meta alcançada" },
+  { nome: "Visualizações de conteúdo", pct: 100, tone: "green", statusLabel: "Meta alcançada" },
+  { nome: "Interações nas redes sociais", pct: 100, tone: "green", statusLabel: "Meta alcançada" },
+  { nome: "Visitas ao perfil", pct: 100, tone: "green", statusLabel: "Meta alcançada" },
+  { nome: "Alcance de novos utilizadores", pct: 100, tone: "green", statusLabel: "Meta alcançada" },
+  { nome: "Crescimento da comunidade (seguidores)", pct: 80, tone: "amber", statusLabel: "Em evolução" },
+  { nome: "CTRs de tráfego pago", pct: 90, tone: "amber", statusLabel: "Em otimização" },
+];
+
+// evolução do projeto por área, para a página de Ações MKT360
+const EVOLUCAO_PROJETO = [
+  { nome: "Comunicação", pct: 100, tone: "green", statusLabel: "Consolidada" },
+  { nome: "Conteúdo", pct: 100, tone: "green", statusLabel: "Consolidado" },
+  { nome: "Website", pct: 100, tone: "green", statusLabel: "Consolidado" },
+  { nome: "Atendimento", pct: 100, tone: "green", statusLabel: "Consolidado" },
+  { nome: "Formações", pct: 70, tone: "amber", statusLabel: "Em implementação" },
+  { nome: "Tráfego Pago", pct: 90, tone: "amber", statusLabel: "Em otimização" },
+  { nome: "Novo Sistema", pct: 80, tone: "amber", statusLabel: "Em implementação" },
+  { nome: "IA", pct: 30, tone: "blue", statusLabel: "Próxima fase" },
+];
+
 // ---------- dados operacionais das clínicas ----------
 const CLINIC_DATA = {
   "Tires": {
@@ -435,12 +457,6 @@ const PILARES = [
     ],
     impacto: ["Base preparada para futuras automações", "Menos processos manuais no futuro"],
   },
-];
-
-const TIMELINE = [
-  { fase: "Maio", texto: "Arranque da nova estrutura de comunicação e primeiras campanhas sazonais." },
-  { fase: "Junho", texto: "Consolidação da produção de conteúdo, testes de tráfego pago e novas funcionalidades." },
-  { fase: "Próxima fase", texto: "Ativação do sistema completo e automações avançadas." },
 ];
 
 const PROXIMA_FASE = {
@@ -945,6 +961,29 @@ function PillarCard({ icon: Icon, titulo, objetivo, implementacoes, nota, impact
   );
 }
 
+const PROGRESS_TONES = {
+  green: { fill: "linear-gradient(90deg, #34D399, #16A34A)", text: "#15803D", bg: "#E7F8EE", glow: "rgba(22,163,74,0.35)" },
+  amber: { fill: "linear-gradient(90deg, #FBBF24, #D69E2E)", text: "#8A5A00", bg: "#FEF6E7", glow: "rgba(214,158,46,0.35)" },
+  blue: { fill: `linear-gradient(90deg, #93C5FD, ${blue})`, text: blue, bg: blueSoft, glow: "rgba(37,99,235,0.35)" },
+};
+
+function ProgressBarRow({ nome, pct, tone, statusLabel }) {
+  const c = PROGRESS_TONES[tone];
+  return (
+    <div style={{ marginBottom: 20 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8, gap: 10, flexWrap: "wrap" }}>
+        <span style={{ fontFamily: body, fontSize: 13.5, fontWeight: 700, color: ink }}>{nome}</span>
+        <span style={{ fontFamily: body, fontSize: 11, fontWeight: 700, color: c.text, background: c.bg, padding: "4px 12px", borderRadius: 999, whiteSpace: "nowrap" }}>
+          {statusLabel}
+        </span>
+      </div>
+      <div style={{ background: "#EEF1F5", borderRadius: 999, height: 10, overflow: "hidden" }}>
+        <div style={{ width: `${pct}%`, height: "100%", background: c.fill, borderRadius: 999, boxShadow: `0 0 10px ${c.glow}` }} />
+      </div>
+    </div>
+  );
+}
+
 function ImpactCard({ titulo, itens }) {
   return (
     <div style={{ background: surface, border: `1px solid ${border}`, borderRadius: 16, padding: "22px 24px" }}>
@@ -1214,6 +1253,23 @@ export default function MarketingDashboard() {
             </div>
             <div style={{ fontFamily: body, fontSize: 12, color: mutedSoft, marginTop: 4 }}>sem meta definida no acordo inicial</div>
           </div>
+        </div>
+
+        <SectionTitle eyebrow="Trajetória">Estado das metas contratuais</SectionTitle>
+        <Caption>Visão rápida do estado de cada meta definida em contrato, para além do crescimento acumulado acima.</Caption>
+        <div style={{ background: surface, border: `1px solid ${border}`, borderRadius: 18, padding: "26px 26px 6px", marginBottom: 24 }}>
+          {METAS_CONTRATUAIS.map(m => <ProgressBarRow key={m.nome} {...m} />)}
+        </div>
+        <div style={{
+          display: "flex", alignItems: "flex-start", gap: 10, background: "#FFFBEB", border: "1px solid #FDE9B0",
+          borderLeft: "4px solid #D69E2E", borderRadius: 12, padding: "14px 18px", marginBottom: 56
+        }}>
+          <AlertTriangle size={16} color="#B7791F" style={{ flexShrink: 0, marginTop: 2 }} />
+          <p style={{ fontFamily: body, fontSize: 12.5, color: "#7B5B10", margin: 0, lineHeight: 1.6 }}>
+            As campanhas de tráfego pago encontram-se temporariamente em pausa devido à regularização da titularidade
+            da conta Meta da Clínica Sorridente. Este processo está a ser acompanhado com a Cláudia em conjunto com a
+            nossa equipa e, assim que estiver concluído, as campanhas serão reativadas e otimizadas de forma contínua.
+          </p>
         </div>
 
         <SectionTitle eyebrow="Detalhe">Comparativo mensal</SectionTitle>
@@ -1554,34 +1610,14 @@ export default function MarketingDashboard() {
               {IMPACTO_AREAS.map(a => <ImpactCard key={a.titulo} {...a} />)}
             </div>
 
-            {/* timeline */}
-            <SectionTitle eyebrow="Evolução">Linha temporal do projeto</SectionTitle>
-            <Caption>A evolução do trabalho, mês a mês, até à próxima fase.</Caption>
+            {/* evolução do projeto */}
+            <SectionTitle eyebrow="Evolução">Evolução do projeto</SectionTitle>
+            <Caption>O estado de consolidação de cada área do Marketing 360, num relance.</Caption>
             <div style={{
-              display: "grid", gridTemplateColumns: `repeat(${TIMELINE.length}, 1fr)`, gap: 0,
-              background: surface, border: `1px solid ${border}`, borderRadius: 18, padding: "30px 26px", marginBottom: 56
+              display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", columnGap: 40,
+              background: surface, border: `1px solid ${border}`, borderRadius: 18, padding: "28px 28px 8px", marginBottom: 56
             }}>
-              {TIMELINE.map((t, i) => (
-                <div key={t.fase} style={{ position: "relative", padding: "0 18px", textAlign: "center" }}>
-                  {i > 0 && (
-                    <div style={{ position: "absolute", left: 0, top: 15, width: "50%", height: 2, background: blueLine }} />
-                  )}
-                  {i < TIMELINE.length - 1 && (
-                    <div style={{ position: "absolute", right: 0, top: 15, width: "50%", height: 2, background: blueLine }} />
-                  )}
-                  <div style={{
-                    width: 32, height: 32, borderRadius: "50%", background: i === TIMELINE.length - 1 ? "#fff" : blue,
-                    border: i === TIMELINE.length - 1 ? `2px dashed ${blue}` : "none",
-                    display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", position: "relative", zIndex: 1
-                  }}>
-                    {i === TIMELINE.length - 1
-                      ? <ArrowRight size={14} color={blue} />
-                      : <Check size={14} color="#fff" strokeWidth={3} />}
-                  </div>
-                  <div style={{ fontFamily: display, fontSize: 14.5, fontWeight: 700, color: ink, marginBottom: 6 }}>{t.fase}</div>
-                  <p style={{ fontFamily: body, fontSize: 12, color: muted, lineHeight: 1.55, margin: "0 auto", maxWidth: 220 }}>{t.texto}</p>
-                </div>
-              ))}
+              {EVOLUCAO_PROJETO.map(e => <ProgressBarRow key={e.nome} {...e} />)}
             </div>
 
             {/* próxima fase */}
