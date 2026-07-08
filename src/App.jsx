@@ -346,13 +346,35 @@ const NAV = [
 ];
 
 // dashboard executivo: contagens reais, derivadas das implementações listadas
-const EXEC_KPIS = [
-  { icon: ListChecks, label: "Frentes de trabalho implementadas", value: 33 },
+// infraestrutura de marketing implementada, ao longo dos 5 meses desde o início do Marketing 360 (fevereiro a junho)
+const INFRA_KPIS = [
+  { icon: CalendarRange, label: "Meses de implementação", value: 5 },
   { icon: Target, label: "Áreas estratégicas desenvolvidas", value: 5 },
-  { icon: Bot, label: "Novas funcionalidades implementadas", value: 7 },
-  { icon: Camera, label: "Tipos de ativos produzidos", value: 8 },
+  { icon: Globe, label: "Plataformas estruturadas", value: 5 },
+  { icon: RotateCcw, label: "Processos implementados", value: 5 },
   { icon: Gift, label: "Campanhas desenvolvidas", value: 2 },
-  { icon: RotateCcw, label: "Processos otimizados", value: 5 },
+  { icon: Bot, label: "Ferramentas configuradas", value: 5 },
+];
+
+const INFRA_CONSTRUIDO = [
+  { icon: MessageCircle, area: "Comunicação", itens: ["WhatsApp Business", "Perfil profissional", "Mensagens automáticas", "Estrutura de atendimento"] },
+  { icon: Camera, area: "Marketing", itens: ["Planeamento editorial", "Produção contínua de conteúdos", "Campanhas sazonais", "Organização da comunicação"] },
+  { icon: CircleDollarSign, area: "Publicidade", itens: ["Estrutura Meta Ads", "Formulários de captação", "Estrutura de geração de leads"] },
+  { icon: Globe, area: "Website", itens: ["Casos de Sucesso", "Cartão digital", "Atualizações"] },
+  { icon: Bot, area: "Sistema", itens: ["Estrutura preparada", "Integração em desenvolvimento"] },
+];
+
+const INFRA_COMPETENCIAS = [
+  "Estratégia Digital", "Produção Audiovisual", "Fotografia", "Design Gráfico", "Copywriting",
+  "Gestão de Redes Sociais", "Publicidade Digital", "Desenvolvimento Web", "Automação",
+  "Organização de Processos", "Formação da Equipa", "Análise de Dados",
+];
+
+const INFRA_CHECKLIST = [
+  "Planeamento Estratégico Anual", "Dashboard de Relatórios", "Planeamento Editorial", "WhatsApp Business",
+  "Sistema de Validação de Conteúdos", "Casos de Sucesso no Website", "Estrutura de Captação de Leads",
+  "Formação da Equipa para Contacto com Leads", "Plataforma TikTok", "Ativação da Função Reels Teste",
+  "Estrutura para Automação", "Planeamento de Campanhas", "Marketing 360 Estruturado",
 ];
 
 // os cinco pilares estratégicos, cada um com objetivo, implementações e impacto
@@ -872,26 +894,6 @@ function PageNav({ children }) {
   );
 }
 
-function ExecKpiCard({ icon: Icon, label, value }) {
-  return (
-    <div style={{ background: surface, border: `1px solid ${border}`, borderRadius: 18, padding: "24px 22px", position: "relative", overflow: "hidden" }}>
-      <div style={{
-        position: "absolute", top: -30, right: -30, width: 100, height: 100,
-        borderRadius: "50%", background: blueSoft, opacity: 0.6, filter: "blur(4px)"
-      }} />
-      <div style={{ position: "relative" }}>
-        <div style={{ width: 34, height: 34, borderRadius: 10, background: blueSoft, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 14 }}>
-          <Icon size={16} color={blue} strokeWidth={2} />
-        </div>
-        <div style={{ fontFamily: body, fontSize: 34, fontWeight: 800, color: ink, fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" }}>
-          {value}
-        </div>
-        <div style={{ fontFamily: body, fontSize: 12, color: muted, marginTop: 6, lineHeight: 1.4 }}>{label}</div>
-      </div>
-    </div>
-  );
-}
-
 function PillarCard({ icon: Icon, titulo, objetivo, implementacoes, nota, impacto }) {
   return (
     <div style={{ background: surface, border: `1px solid ${border}`, borderRadius: 20, padding: "30px 32px", marginBottom: 18 }}>
@@ -1256,6 +1258,20 @@ export default function MarketingDashboard() {
           </div>
         </div>
 
+        <div style={{
+          display: "flex", alignItems: "flex-start", gap: 10, background: "#FFFBEB", border: "1px solid #FDE9B0",
+          borderLeft: "4px solid #D69E2E", borderRadius: 12, padding: "14px 18px", marginBottom: 60
+        }}>
+          <AlertTriangle size={16} color="#B7791F" style={{ flexShrink: 0, marginTop: 2 }} />
+          <p style={{ fontFamily: body, fontSize: 12.5, color: "#7B5B10", margin: 0, lineHeight: 1.6 }}>
+            <strong>Nota sobre a queda de junho.</strong> Em junho, com o Mundial de futebol a dominar as redes sociais,
+            os números orgânicos de empresas e criadores de conteúdo em geral caíram de forma generalizada. O algoritmo
+            passa a priorizar conteúdos sobre os assuntos do momento, e páginas com outros temas acabam por ter menos
+            alcance nesse período. É um efeito sazonal e transversal ao setor, não específico da Clínica Sorridente, e os
+            números tendem a normalizar e a voltar a crescer já em julho.
+          </p>
+        </div>
+
         {/* ===== PARTE 2 · ANÁLISE CRUZADA ===== */}
         <PartDivider
           number="02"
@@ -1402,11 +1418,126 @@ export default function MarketingDashboard() {
               badge="MAI - JUN 2026"
             />
 
-            {/* dashboard executivo */}
-            <SectionTitle eyebrow="Visão geral">Resultados</SectionTitle>
-            <Caption>A dimensão do trabalho implementado nos últimos dois meses, num relance.</Caption>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: 14, marginBottom: 56 }}>
-              {EXEC_KPIS.map(k => <ExecKpiCard key={k.label} {...k} />)}
+            <div style={{
+              display: "flex", alignItems: "flex-start", gap: 10, background: "#FFFBEB", border: "1px solid #FDE9B0",
+              borderLeft: "4px solid #D69E2E", borderRadius: 12, padding: "14px 18px", marginBottom: 40
+            }}>
+              <AlertTriangle size={16} color="#B7791F" style={{ flexShrink: 0, marginTop: 2 }} />
+              <p style={{ fontFamily: body, fontSize: 12.5, color: "#7B5B10", margin: 0, lineHeight: 1.6 }}>
+                <strong>As ações detalhadas nesta página referem-se aos últimos dois meses (Maio e Junho de 2026).</strong> O
+                comparativo mais abaixo, "O que existe hoje que não existia há cinco meses", olha para todo o percurso desde
+                o início do Marketing 360, em fevereiro.
+              </p>
+            </div>
+
+            {/* infraestrutura de marketing implementada */}
+            <SectionTitle eyebrow="Infraestrutura" large>Infraestrutura de Marketing Implementada</SectionTitle>
+            <Caption wide>
+              Ao longo dos últimos cinco meses foi desenvolvida uma estrutura completa de comunicação, captação de
+              pacientes, automação e marketing digital, criando uma base sólida para a evolução contínua da Clínica Sorridente.
+            </Caption>
+
+            <div style={{
+              background: `linear-gradient(160deg, #EEF3FF 0%, #F6F9FF 55%, #FBFDFF 100%)`,
+              border: `1px solid ${blueLine}`, borderRadius: 26, padding: "34px 34px 8px", marginBottom: 56, position: "relative", overflow: "hidden"
+            }}>
+              <div style={{
+                position: "absolute", top: -70, right: -60, width: 260, height: 260, borderRadius: "50%",
+                background: "rgba(37,99,235,0.14)", filter: "blur(50px)", pointerEvents: "none"
+              }} />
+
+              {/* bloco 1: o projeto em números */}
+              <div style={{ position: "relative" }}>
+                <div style={{ fontFamily: body, fontSize: 11, fontWeight: 700, color: blue, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 14 }}>
+                  O projeto em números
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 14, marginBottom: 34 }}>
+                  {INFRA_KPIS.map(k => (
+                    <div key={k.label} style={{ background: "#fff", border: `1px solid ${border}`, borderRadius: 16, padding: "20px 20px" }}>
+                      <div style={{ width: 32, height: 32, borderRadius: 9, background: blueSoft, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
+                        <k.icon size={15} color={blue} strokeWidth={2} />
+                      </div>
+                      <div style={{ fontFamily: body, fontSize: 30, fontWeight: 800, color: ink, fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" }}>{k.value}</div>
+                      <div style={{ fontFamily: body, fontSize: 11.5, color: muted, marginTop: 5, lineHeight: 1.4 }}>{k.label}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* bloco 2: o que foi construído */}
+                <div style={{ fontFamily: body, fontSize: 11, fontWeight: 700, color: blue, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 14 }}>
+                  O que foi construído
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 14, marginBottom: 34 }}>
+                  {INFRA_CONSTRUIDO.map(b => (
+                    <div key={b.area} style={{ background: "#fff", border: `1px solid ${border}`, borderRadius: 16, padding: "18px 20px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 12 }}>
+                        <div style={{ width: 28, height: 28, borderRadius: 8, background: blueSoft, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <b.icon size={13} color={blue} strokeWidth={2} />
+                        </div>
+                        <span style={{ fontFamily: display, fontSize: 13.5, fontWeight: 700, color: ink }}>{b.area}</span>
+                      </div>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                        {b.itens.map(item => (
+                          <span key={item} style={{ fontFamily: body, fontSize: 11.5, color: muted, lineHeight: 1.5 }}>{item}</span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* bloco 3: competências envolvidas */}
+                <div style={{ fontFamily: body, fontSize: 11, fontWeight: 700, color: blue, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 14 }}>
+                  Competências envolvidas
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 34 }}>
+                  {INFRA_COMPETENCIAS.map(c => (
+                    <span key={c} style={{
+                      fontFamily: body, fontSize: 12, fontWeight: 600, color: ink, background: "#fff",
+                      border: `1px solid ${border}`, padding: "7px 14px", borderRadius: 999
+                    }}>
+                      {c}
+                    </span>
+                  ))}
+                </div>
+
+                {/* bloco 4: o que existe hoje que não existia há 5 meses */}
+                <div style={{ fontFamily: body, fontSize: 11, fontWeight: 700, color: blue, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>
+                  O que existe hoje que não existia há cinco meses
+                </div>
+                <p style={{ fontFamily: body, fontSize: 12, color: muted, margin: "0 0 16px" }}>
+                  Cada uma destas linhas representa algo que a clínica não tinha antes do Marketing 360.
+                </p>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 10, marginBottom: 34 }}>
+                  {INFRA_CHECKLIST.map(item => (
+                    <div key={item} style={{ display: "flex", alignItems: "center", gap: 10, background: "#fff", border: `1px solid ${border}`, borderRadius: 12, padding: "13px 16px" }}>
+                      <div style={{ width: 22, height: 22, borderRadius: "50%", background: greenSoft, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <Check size={12} color={green} strokeWidth={3.5} />
+                      </div>
+                      <span style={{ fontFamily: display, fontSize: 13.5, fontWeight: 700, color: ink }}>{item}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* bloco final: valor entregue */}
+                <div style={{
+                  background: `linear-gradient(135deg, ${ink} 0%, #17243B 100%)`, borderRadius: 18,
+                  padding: "26px 28px", marginBottom: 26, position: "relative", overflow: "hidden"
+                }}>
+                  <div style={{
+                    position: "absolute", top: -50, right: -30, width: 180, height: 180, borderRadius: "50%",
+                    background: "rgba(37,99,235,0.3)", filter: "blur(40px)"
+                  }} />
+                  <div style={{ fontFamily: body, fontSize: 11, fontWeight: 700, color: blueLine, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10, position: "relative" }}>
+                    Valor entregue
+                  </div>
+                  <p style={{ fontFamily: body, fontSize: 14, color: "#E4EAF5", lineHeight: 1.75, margin: 0, maxWidth: 780, position: "relative" }}>
+                    Ao longo destes cinco meses não foram apenas produzidos conteúdos para as redes sociais. Foi desenvolvida
+                    uma infraestrutura de Marketing 360 composta por processos, campanhas, ferramentas, ativos digitais,
+                    formação da equipa e estratégias de comunicação, criando uma base sólida para o crescimento sustentável
+                    da Clínica Sorridente nos próximos meses.
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* pilares estratégicos */}
@@ -1517,7 +1648,7 @@ export default function MarketingDashboard() {
               definidos para cada período do ano.
             </Caption>
 
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 10, background: blueSoft, border: `1px solid ${blueLine}`, borderRadius: 12, padding: "14px 18px", marginBottom: 24 }}>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 10, background: blueSoft, border: `1px solid ${blueLine}`, borderRadius: 12, padding: "14px 18px", marginBottom: 20 }}>
               <MousePointerClick size={16} color={blue} style={{ flexShrink: 0, marginTop: 2 }} />
               <div>
                 <div style={{ fontFamily: body, fontSize: 12.5, fontWeight: 700, color: "#1E3A8A", marginBottom: 3 }}>Como utilizar este planeamento</div>
@@ -1526,6 +1657,19 @@ export default function MarketingDashboard() {
                   para visualizar os objetivos, campanhas, conteúdos e ações previstas para esse período.
                 </span>
               </div>
+            </div>
+
+            <div style={{
+              display: "flex", alignItems: "flex-start", gap: 10, background: "#FFFBEB", border: "1px solid #FDE9B0",
+              borderLeft: "4px solid #D69E2E", borderRadius: 12, padding: "14px 18px", marginBottom: 24
+            }}>
+              <AlertTriangle size={16} color="#B7791F" style={{ flexShrink: 0, marginTop: 2 }} />
+              <p style={{ fontFamily: body, fontSize: 12.5, color: "#7B5B10", margin: 0, lineHeight: 1.6 }}>
+                <strong>Este é apenas um resumo.</strong> Todo o planeamento e os conteúdos ficam disponíveis, com mais
+                detalhe, na plataforma Rella, que usamos para validação dos conteúdos. Para ver planeamentos, datas e
+                conteúdos já finalizados, é lá que devem consultar, e é também por lá que podem validar, ou solicitar
+                correções e melhorias.
+              </p>
             </div>
 
             {/* bloco único: timeline + cartão de detalhe, visualmente ligados */}
@@ -1636,7 +1780,7 @@ export default function MarketingDashboard() {
 
                 {/* 5. temas que vamos dominar */}
                 <div style={{ marginBottom: 26 }}>
-                  <div style={{ fontFamily: body, fontSize: 11, fontWeight: 700, color: mutedSoft, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }}>Temas que vamos dominar</div>
+                  <div style={{ fontFamily: body, fontSize: 11, fontWeight: 700, color: mutedSoft, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }}>Temas que vamos abordar</div>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10 }}>
                     {mesAtivo.temasDominar.map(t => (
                       <div key={t.grupo} style={{ background: bg, border: `1px solid ${border}`, borderRadius: 12, padding: "13px 15px" }}>
@@ -1729,6 +1873,19 @@ export default function MarketingDashboard() {
                 </div>
 
               </div>
+            </div>
+
+            <div style={{
+              display: "flex", alignItems: "flex-start", gap: 10, background: "#FFFBEB", border: "1px solid #FDE9B0",
+              borderLeft: "4px solid #D69E2E", borderRadius: 12, padding: "14px 18px", marginBottom: 56
+            }}>
+              <AlertTriangle size={16} color="#B7791F" style={{ flexShrink: 0, marginTop: 2 }} />
+              <p style={{ fontFamily: body, fontSize: 12.5, color: "#7B5B10", margin: 0, lineHeight: 1.6 }}>
+                <strong>Querem sugerir ou adicionar um tema?</strong> Este planeamento é ajustável e flexível. Antes de
+                sugerir um novo tema, vale a pena confirmar se ele já não está previsto no Rella. Depois, é só pedir por
+                email, através do Rella ou pelo WhatsApp. Só pedimos aviso prévio, para conseguirmos produzir e validar o
+                conteúdo com a devida antecedência.
+              </p>
             </div>
 
             {/* conteúdo orgânico */}
