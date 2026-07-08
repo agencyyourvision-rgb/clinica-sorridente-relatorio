@@ -6,7 +6,7 @@ import {
   Video, CircleDollarSign, Info, Trophy, SlidersHorizontal,
   BarChart3, ListChecks, CalendarRange, Rocket, ChevronRight, ChevronLeft, Check,
   MessageCircle, Camera, Gift, Globe, Bot, Award, UserPlus, Layers, Repeat, BookOpen, MousePointerClick, Quote, ChevronDown, CircleDot,
-  ClipboardCheck, Compass
+  ClipboardCheck, Compass, Download
 } from "lucide-react";
 
 // ---------- tokens ----------
@@ -25,6 +25,9 @@ const red = "#DC2626";
 const redSoft = "#FDEEEE";
 const violet = "#7C3AED";
 const violetSoft = "#F3EEFF";
+const rose = "#DB2777";
+const roseSoft = "#FDF0F7";
+const roseLine = "#F5C2DD";
 
 const display = "'Manrope', sans-serif";
 const body = "'Inter', sans-serif";
@@ -51,6 +54,24 @@ const METAS = [
   { key: "visitasPerfil", icon: UserRound, label: "Visitas ao perfil", goal: 50, achieved: growth.visitasPerfil },
 ];
 const BONUS_METRIC = { key: "visualizacoes", icon: Eye, label: "Visualizações", achieved: growth.visualizacoes };
+
+const TOP_PUBLICACOES = [
+  {
+    titulo: "Hoje existem várias soluções que permitem recuperar o sorriso, mesmo em casos avançados.",
+    formato: "Reel", data: "22 de junho", views: 700, likes: 37, naoSeguidores: 71.9, watchTime: "1h 19m 54s",
+  },
+  {
+    titulo: "Hoje, existem soluções seguras e eficazes que permitem devolver a confiança no sorriso.",
+    formato: "Reel", data: "6 de maio", views: 792, likes: 35, naoSeguidores: 55.5, watchTime: "1h 41m 28s",
+  },
+];
+
+const AJUSTES_PUBLICACOES = [
+  "Aumentar a produção de reels: são o formato que mais gera partilhas e alcance fora da base de seguidores.",
+  "Apostar em conteúdo de topo de funil, pensado para quem ainda não conhece a clínica, já que os melhores reels têm mais de metade do alcance em não-seguidores.",
+  "Explorar o Reels Teste da Meta, para validar estes conteúdos junto de novos públicos antes da publicação definitiva.",
+  "Publicar com maior regularidade: o próprio Instagram sinalizou queda de frequência de publicações nas últimas semanas, um fator que também pesa no alcance.",
+];
 
 const METAS_CONTRATUAIS = [
   { nome: "Alcance das publicações", pct: 100, tone: "green", statusLabel: "Meta alcançada" },
@@ -904,7 +925,7 @@ function PrevSectionButton({ label, onClick }) {
 
 function PageNav({ children }) {
   return (
-    <div style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap", padding: "8px 0 56px" }}>
+    <div className="no-print" style={{ display: "flex", justifyContent: "center", gap: 12, flexWrap: "wrap", padding: "8px 0 56px" }}>
       {children}
     </div>
   );
@@ -1100,13 +1121,18 @@ export default function MarketingDashboard() {
         @keyframes floatGlow { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-18px) scale(1.05); } }
         .glow-anim { animation: floatGlow 9s ease-in-out infinite; }
         @media (prefers-reduced-motion: reduce) { .glow-anim { animation: none; } }
+        @media print {
+          .no-print { display: none !important; }
+          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+          body { background: #fff !important; }
+        }
       `}</style>
 
       {/* menu fixo */}
-      <div style={{ position: "sticky", top: 0, zIndex: 40, background: "rgba(250,251,252,0.92)", backdropFilter: "blur(10px)", borderBottom: `1px solid ${border}` }}>
+      <div className="no-print" style={{ position: "sticky", top: 0, zIndex: 40, background: "rgba(250,251,252,0.92)", backdropFilter: "blur(10px)", borderBottom: `1px solid ${border}` }}>
         <div style={{ maxWidth: 1180, margin: "0 auto", padding: "14px 32px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 14 }}>
           <span style={{ fontFamily: display, fontWeight: 800, fontSize: 15, color: ink, letterSpacing: "-0.01em" }}>Clínica Sorridente</span>
-          <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 4, flexWrap: "wrap" }}>
             {NAV.map(item => {
               const active = activeTab === item.id;
               return (
@@ -1119,6 +1145,13 @@ export default function MarketingDashboard() {
                 </button>
               );
             })}
+            <button onClick={() => window.print()} title="Exportar esta página" style={{
+              fontFamily: body, fontSize: 12.5, fontWeight: 600, padding: "8px 14px", borderRadius: 9,
+              border: `1px solid ${border}`, cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
+              background: "#fff", color: muted, marginLeft: 6
+            }}>
+              <Download size={14} /> Exportar
+            </button>
           </div>
         </div>
       </div>
@@ -1323,9 +1356,164 @@ export default function MarketingDashboard() {
             <strong>Nota sobre a queda de junho.</strong> Em junho, com o Mundial de futebol a dominar as redes sociais,
             os números orgânicos de empresas e criadores de conteúdo em geral caíram de forma generalizada. O algoritmo
             passa a priorizar conteúdos sobre os assuntos do momento, e páginas com outros temas acabam por ter menos
-            alcance nesse período. É um efeito sazonal e transversal ao setor, não específico da Clínica Sorridente, e os
-            números tendem a normalizar e a voltar a crescer já em julho.
+            alcance nesse período. É um efeito sazonal e transversal ao setor, não específico da Clínica Sorridente. A
+            isto soma-se uma redução pontual na frequência de publicações nas últimas semanas, um fator que está dentro
+            do nosso controlo e que já estamos a corrigir. Os números tendem a normalizar e a voltar a crescer já em julho.
           </p>
+        </div>
+
+        {/* performance das publicações */}
+        <SectionTitle eyebrow="Performance" large>Performance das publicações</SectionTitle>
+        <Caption wide>Um olhar mais de perto sobre o que tem funcionado nas últimas semanas: que formatos, que conteúdos e a que horas.</Caption>
+
+        <div style={{
+          background: `linear-gradient(160deg, #FDF0F7 0%, #F5F0FF 55%, #FBFBFF 100%)`,
+          border: `1px solid ${roseLine}`, borderRadius: 26, padding: "34px 34px 8px", marginBottom: 56, position: "relative", overflow: "hidden"
+        }}>
+          <div style={{
+            position: "absolute", top: -70, right: -60, width: 260, height: 260, borderRadius: "50%",
+            background: "linear-gradient(135deg, rgba(219,39,119,0.16), rgba(124,58,237,0.16))", filter: "blur(50px)", pointerEvents: "none"
+          }} />
+
+          <div style={{ position: "relative" }}>
+            {/* recap do período */}
+            <div style={{ fontFamily: body, fontSize: 11, fontWeight: 700, color: rose, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 14 }}>
+              Últimas semanas
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(190px, 1fr))", gap: 14, marginBottom: 34 }}>
+              <div style={{ background: "#fff", border: `1px solid ${border}`, borderRadius: 16, padding: "20px 20px" }}>
+                <div style={{ width: 32, height: 32, borderRadius: 9, background: roseSoft, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
+                  <Eye size={15} color={rose} strokeWidth={2} />
+                </div>
+                <div style={{ fontFamily: body, fontSize: 30, fontWeight: 800, color: ink, fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" }}>6,7K</div>
+                <div style={{ fontFamily: body, fontSize: 11.5, color: muted, marginTop: 5 }}>Visualizações</div>
+              </div>
+              <div style={{ background: "#fff", border: `1px solid ${border}`, borderRadius: 16, padding: "20px 20px" }}>
+                <div style={{ width: 32, height: 32, borderRadius: 9, background: roseSoft, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
+                  <UserPlus size={15} color={rose} strokeWidth={2} />
+                </div>
+                <div style={{ fontFamily: body, fontSize: 30, fontWeight: 800, color: ink, fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" }}>49%</div>
+                <div style={{ fontFamily: body, fontSize: 11.5, color: muted, marginTop: 5 }}>Visualizações de não-seguidores (+3% vs. mês anterior)</div>
+              </div>
+              <div style={{ background: "#fff", border: `1px solid ${border}`, borderRadius: 16, padding: "20px 20px" }}>
+                <div style={{ width: 32, height: 32, borderRadius: 9, background: roseSoft, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
+                  <Heart size={15} color={rose} strokeWidth={2} />
+                </div>
+                <div style={{ fontFamily: body, fontSize: 30, fontWeight: 800, color: ink, fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em" }}>+11</div>
+                <div style={{ fontFamily: body, fontSize: 11.5, color: muted, marginTop: 5 }}>Novos seguidores (total ≈ 2,1K)</div>
+              </div>
+            </div>
+
+            {/* reels vs posts */}
+            <div style={{ fontFamily: body, fontSize: 11, fontWeight: 700, color: rose, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 14 }}>
+              Reels vs. Posts
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 14, marginBottom: 20 }}>
+              <div style={{ background: "#fff", border: `1px solid ${border}`, borderRadius: 16, padding: "20px 22px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                  <Video size={15} color={rose} />
+                  <span style={{ fontFamily: display, fontSize: 14, fontWeight: 700, color: ink }}>Reels</span>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                  {[["Likes", 362], ["Comentários", 23], ["Guardados", 5], ["Partilhas", 35]].map(([l, v]) => (
+                    <div key={l}>
+                      <div style={{ fontFamily: body, fontSize: 20, fontWeight: 800, color: ink, fontVariantNumeric: "tabular-nums" }}>{v}</div>
+                      <div style={{ fontFamily: body, fontSize: 11, color: muted }}>{l}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{ background: "#fff", border: `1px solid ${border}`, borderRadius: 16, padding: "20px 22px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                  <Layers size={15} color={muted} />
+                  <span style={{ fontFamily: display, fontSize: 14, fontWeight: 700, color: ink }}>Posts</span>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                  {[["Likes", 355], ["Comentários", 11], ["Guardados", 3], ["Partilhas", 2]].map(([l, v]) => (
+                    <div key={l}>
+                      <div style={{ fontFamily: body, fontSize: 20, fontWeight: 800, color: ink, fontVariantNumeric: "tabular-nums" }}>{v}</div>
+                      <div style={{ fontFamily: body, fontSize: 11, color: muted }}>{l}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 34 }}>
+              <ArrowUpRight size={13} color={rose} />
+              <span style={{ fontFamily: body, fontSize: 12, color: "#9D174D" }}>Os reels geraram <strong>17 vezes mais partilhas</strong> do que os posts, o principal motor de alcance fora da base de seguidores.</span>
+            </div>
+
+            {/* top publicações */}
+            <div style={{ fontFamily: body, fontSize: 11, fontWeight: 700, color: rose, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 14 }}>
+              Publicações em destaque
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 14, marginBottom: 34 }}>
+              {TOP_PUBLICACOES.map(p => (
+                <div key={p.titulo} style={{ background: "#fff", border: `1px solid ${border}`, borderRadius: 16, padding: "20px 22px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                    <span style={{ fontFamily: body, fontSize: 10.5, fontWeight: 700, color: rose, background: roseSoft, padding: "3px 10px", borderRadius: 999 }}>{p.formato}</span>
+                    <span style={{ fontFamily: body, fontSize: 11, color: mutedSoft }}>{p.data}</span>
+                  </div>
+                  <p style={{ fontFamily: display, fontSize: 13.5, fontWeight: 700, color: ink, lineHeight: 1.4, margin: "0 0 14px" }}>{p.titulo}</p>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10, marginBottom: 10 }}>
+                    <div>
+                      <div style={{ fontFamily: body, fontSize: 17, fontWeight: 800, color: ink }}>{p.views}</div>
+                      <div style={{ fontFamily: body, fontSize: 10.5, color: muted }}>Visualizações</div>
+                    </div>
+                    <div>
+                      <div style={{ fontFamily: body, fontSize: 17, fontWeight: 800, color: ink }}>{p.likes}</div>
+                      <div style={{ fontFamily: body, fontSize: 10.5, color: muted }}>Likes</div>
+                    </div>
+                    <div>
+                      <div style={{ fontFamily: body, fontSize: 17, fontWeight: 800, color: ink }}>{p.naoSeguidores}%</div>
+                      <div style={{ fontFamily: body, fontSize: 10.5, color: muted }}>Não-seguidores</div>
+                    </div>
+                  </div>
+                  <div style={{ fontFamily: body, fontSize: 11, color: mutedSoft }}>Tempo de visualização: {p.watchTime}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* melhor horário */}
+            <div style={{ fontFamily: body, fontSize: 11, fontWeight: 700, color: rose, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 14 }}>
+              Melhor horário para publicar
+            </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 34 }}>
+              {["Segundas, 21h - 00h", "Terças, 21h - 00h", "Quintas, 21h - 00h"].map(h => (
+                <span key={h} style={{
+                  display: "inline-flex", alignItems: "center", gap: 6, fontFamily: body, fontSize: 12, fontWeight: 600,
+                  color: ink, background: "#fff", border: `1px solid ${border}`, padding: "7px 14px", borderRadius: 999
+                }}>
+                  <CalendarCheck size={12} color={rose} /> {h}
+                </span>
+              ))}
+            </div>
+
+            {/* o que vamos ajustar */}
+            <div style={{
+              background: `linear-gradient(135deg, ${ink} 0%, #17243B 100%)`, borderRadius: 18,
+              padding: "26px 28px", marginBottom: 26, position: "relative", overflow: "hidden"
+            }}>
+              <div style={{
+                position: "absolute", top: -50, right: -30, width: 180, height: 180, borderRadius: "50%",
+                background: "rgba(219,39,119,0.3)", filter: "blur(40px)"
+              }} />
+              <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 14, position: "relative" }}>
+                <Target size={15} color="#F5A8CE" />
+                <span style={{ fontFamily: body, fontSize: 11, fontWeight: 700, color: "#F5A8CE", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                  O que vamos ajustar
+                </span>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 10, position: "relative" }}>
+                {AJUSTES_PUBLICACOES.map(a => (
+                  <div key={a} style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+                    <ArrowRight size={14} color="#F5A8CE" style={{ flexShrink: 0, marginTop: 2 }} />
+                    <span style={{ fontFamily: body, fontSize: 13, color: "#E4EAF5", lineHeight: 1.6 }}>{a}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* ===== PARTE 2 · ANÁLISE CRUZADA ===== */}
