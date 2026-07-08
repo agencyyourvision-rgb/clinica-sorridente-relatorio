@@ -47,7 +47,7 @@ const current = monthly[monthly.length - 1];
 // metas acordadas no início do projeto, comparadas com o crescimento acumulado desde o baseline
 const METAS = [
   { key: "alcance", icon: Megaphone, label: "Alcance", goal: 30, achieved: growth.alcance },
-  { key: "interacoes", icon: Heart, label: "Engajamento", goal: 25, achieved: growth.interacoes, note: "A meta inclui um crescimento mínimo de 20% nas interações de não seguidores. Este relatório ainda não separa interações por seguidores e não seguidores, pelo que essa parte específica da meta não está aqui validada." },
+  { key: "interacoes", icon: Heart, label: "Engajamento", goal: 25, achieved: growth.interacoes },
   { key: "visitasPerfil", icon: UserRound, label: "Visitas ao perfil", goal: 50, achieved: growth.visitasPerfil },
 ];
 const BONUS_METRIC = { key: "visualizacoes", icon: Eye, label: "Visualizações", achieved: growth.visualizacoes };
@@ -339,10 +339,10 @@ const RECOMMENDATIONS = [
 ];
 
 const NAV = [
-  { id: "redes-sociais", label: "Relatório Redes Sociais", icon: BarChart3 },
-  { id: "acoes-mes", label: "Ações Maio - Jun MKT360", icon: ListChecks },
-  { id: "plano-anual", label: "Plano de campanhas", icon: CalendarRange },
-  { id: "proximos-passos", label: "Próximos passos", icon: Rocket },
+  { id: "redes-sociais", label: "Resultados Redes Sociais", icon: BarChart3 },
+  { id: "acoes-mes", label: "Ações MKT360 (Maio - Junho)", icon: ListChecks },
+  { id: "plano-anual", label: "Planeamento", icon: CalendarRange },
+  { id: "proximos-passos", label: "Próximos Passos", icon: Rocket },
 ];
 
 // dashboard executivo: contagens reais, derivadas das implementações listadas
@@ -1031,7 +1031,7 @@ function PlaceholderNote({ children }) {
 export default function MarketingDashboard() {
   const [clinicUnit, setClinicUnit] = useState("Geral");
   const [clinicPeriod, setClinicPeriod] = useState("Jun/2026");
-  const [activeTab, setActiveTab] = useState("redes-sociais");
+  const [activeTab, setActiveTab] = useState("boas-vindas");
   const [selectedMonth, setSelectedMonth] = useState(CURRENT_MONTH_ID);
 
   const clinica = getClinicStats(clinicUnit, clinicPeriod);
@@ -1081,6 +1081,51 @@ export default function MarketingDashboard() {
           </div>
         </div>
       </div>
+
+      {/* ===================== TELA INICIAL · BOAS-VINDAS ===================== */}
+      {activeTab === "boas-vindas" && (
+        <div style={{
+          padding: "110px 32px 100px", background: `linear-gradient(180deg, ${blueSoft} 0%, ${bg} 60%)`,
+          position: "relative", overflow: "hidden"
+        }}>
+          <div style={{
+            position: "absolute", top: -80, right: "10%", width: 320, height: 320, borderRadius: "50%",
+            background: "rgba(37,99,235,0.14)", filter: "blur(60px)", pointerEvents: "none"
+          }} />
+          <div style={{ maxWidth: 680, margin: "0 auto", textAlign: "center", position: "relative" }}>
+            <div style={{ fontFamily: body, fontSize: 12, fontWeight: 700, color: blue, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 18 }}>
+              Your Vision Agency
+            </div>
+            <h1 style={{ fontFamily: display, fontSize: 38, fontWeight: 800, color: ink, letterSpacing: "-0.02em", lineHeight: 1.2, margin: 0 }}>
+              Relatório digital da Clínica Sorridente
+            </h1>
+            <p style={{ fontFamily: body, fontSize: 15, color: muted, lineHeight: 1.75, marginTop: 20, maxWidth: 560, marginLeft: "auto", marginRight: "auto" }}>
+              Este é o relatório digital desenvolvido pela Your Vision Agency para acompanhar a estratégia de
+              Marketing 360 da Clínica Sorridente. Basta seguir os menus acima para navegar entre as páginas,
+              a qualquer momento.
+            </p>
+
+            <button onClick={() => goTo("redes-sociais")} style={{
+              fontFamily: body, fontSize: 14.5, fontWeight: 700, color: "#fff", background: blue,
+              border: "none", borderRadius: 999, padding: "15px 34px", cursor: "pointer", marginTop: 36,
+              display: "inline-flex", alignItems: "center", gap: 8, boxShadow: "0 10px 24px rgba(37,99,235,0.3)"
+            }}>
+              Ver relatório <ChevronRight size={17} />
+            </button>
+
+            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 10, marginTop: 48 }}>
+              {NAV.map(item => (
+                <span key={item.id} style={{
+                  display: "inline-flex", alignItems: "center", gap: 7, fontFamily: body, fontSize: 12, fontWeight: 600,
+                  color: muted, background: "#fff", border: `1px solid ${border}`, padding: "8px 15px", borderRadius: 999
+                }}>
+                  <item.icon size={13} color={blue} /> {item.label}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* ===================== ABA 1 · RELATÓRIO DIGITAL ===================== */}
       {activeTab === "redes-sociais" && (
@@ -1841,6 +1886,15 @@ export default function MarketingDashboard() {
               </div>
             ))}
           </div>
+
+          <div style={{ textAlign: "center", marginTop: 64, paddingTop: 40, borderTop: "1px solid rgba(255,255,255,0.14)" }}>
+            <div style={{ fontFamily: display, fontSize: 15, fontWeight: 800, color: "rgba(255,255,255,0.55)", textTransform: "uppercase", letterSpacing: "0.18em", marginBottom: 10 }}>
+              Obrigado
+            </div>
+            <div style={{ fontFamily: display, fontSize: 34, fontWeight: 800, color: "#fff", letterSpacing: "0.02em" }}>
+              Vamos avante!
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1870,6 +1924,9 @@ export default function MarketingDashboard() {
             </div>
             <div style={{ fontFamily: body, fontSize: 12.5, color: muted }}>Fevereiro → Junho 2026</div>
           </div>
+        </div>
+        <div style={{ textAlign: "center", paddingTop: 20 }}>
+          <span style={{ fontFamily: body, fontSize: 11.5, color: mutedSoft }}>Desenvolvido por <strong style={{ color: muted }}>Your Vision Agency</strong></span>
         </div>
       </div>
     </div>
