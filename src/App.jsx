@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Eye, Heart, Megaphone, UserRound, Users, FileText,
   ArrowUpRight, ArrowDownRight, TrendingUp, CalendarCheck,
@@ -8,6 +8,9 @@ import {
   MessageCircle, Camera, Gift, Globe, Bot, Award, UserPlus, Layers, Repeat, BookOpen, MousePointerClick, Quote, ChevronDown, CircleDot,
   ClipboardCheck, Compass, Download, Zap, GraduationCap
 } from "lucide-react";
+import {
+  LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList
+} from "recharts";
 
 // ---------- tokens ----------
 const bg = "#FAFBFC";
@@ -28,6 +31,14 @@ const violetSoft = "#F3EEFF";
 const rose = "#DB2777";
 const roseSoft = "#FDF0F7";
 const roseLine = "#F5C2DD";
+const violetLine = "#E1D4FA";
+
+const METRICAS_RESUMO = [
+  { key: "visualizacoes", label: "Visualizações" },
+  { key: "alcance", label: "Alcance" },
+  { key: "interacoes", label: "Interações" },
+  { key: "visitasPerfil", label: "Visitas ao perfil" },
+];
 
 const display = "'Manrope', sans-serif";
 const body = "'Inter', sans-serif";
@@ -46,6 +57,27 @@ const growth = { visualizacoes: 654, alcance: 1085, interacoes: 1346, visitasPer
 const baseline = { visualizacoes: 5305, alcance: 706, interacoes: 143, visitasPerfil: 127 };
 
 const current = monthly[monthly.length - 1];
+
+// índice (baseline = 100) para comparar o crescimento de todos os indicadores na mesma escala
+// um pequeno gráfico por indicador, cada um com a sua própria escala,
+// para que a subida do baseline até ao mês atual não fique "achatada" pela subida até ao acumulado
+const TRAJETORIA_METRICAS = [
+  { key: "visualizacoes", nome: "Visualizações", cor: blue },
+  { key: "alcance", nome: "Alcance", cor: green },
+  { key: "interacoes", nome: "Interações", cor: violet },
+  { key: "visitasPerfil", nome: "Visitas ao perfil", cor: rose },
+].map(m => {
+  const data = [
+    { periodo: "Baseline", valor: baseline[m.key] },
+    { periodo: "Mês atual", valor: current[m.key] },
+    { periodo: "Acumulado", valor: totals[m.key] },
+  ];
+  const valores = data.map(d => d.valor);
+  const min = Math.min(...valores);
+  const max = Math.max(...valores);
+  const dominio = [Math.floor(min * 0.8), Math.ceil(max * 1.25)];
+  return { ...m, data, dominio };
+});
 
 // metas acordadas no início do projeto, comparadas com o crescimento acumulado desde o baseline
 const METAS = [
@@ -336,6 +368,52 @@ function PartDivider({ number, title, description }) {
   );
 }
 
+// desafios do mês, cada um já com a situação e a solução juntas
+const DESAFIOS = [
+  {
+    icon: RotateCcw,
+    titulo: "Cancelamentos sem reagendamento",
+    situacao: "Muitas consultas canceladas não são remarcadas dentro do mesmo mês.",
+    solucao: "Contacto de acompanhamento e lembretes automáticos para recuperar estes pacientes.",
+  },
+  {
+    icon: CircleDollarSign,
+    titulo: "Campanhas pagas em pausa",
+    situacao: "O tráfego pago está parado enquanto se regulariza a titularidade da conta Meta.",
+    solucao: "Reativar assim que resolvido, com foco em geração de leads, não em reconhecimento.",
+  },
+  {
+    icon: Users,
+    titulo: "Saldo de seguidores apertado",
+    situacao: "Ganhamos seguidores, mas também perdemos. O saldo líquido ainda é pequeno.",
+    solucao: "Produzir mais reels de topo de funil, pensados para quem ainda não nos conhece.",
+  },
+  {
+    icon: ClipboardCheck,
+    titulo: "Conteúdos por publicar",
+    situacao: "Alguns conteúdos ainda não saíram por falta de validação atempada.",
+    solucao: "Validar assim que disponível no Rella, para manter as publicações automáticas em dia.",
+  },
+  {
+    icon: TrendingUp,
+    titulo: "Junho, um mês historicamente mais fraco",
+    situacao: "O histórico da clínica mostra que junho já costuma ser mais baixo, e a coincidência com o Mundial fez alguns números que estavam a subir caírem.",
+    solucao: "Efeito sazonal, não estrutural. Os números já estão a recuperar em julho.",
+  },
+  {
+    icon: Heart,
+    titulo: "Conteúdos que geram mais interação",
+    situacao: "Nem todos os formatos e temas geram o mesmo nível de interação com o público.",
+    solucao: "Continuar a apostar nos formatos que já nos permitiram superar a meta de interações, replicando o que funciona.",
+  },
+  {
+    icon: UserRound,
+    titulo: "Espaço para crescer nas visitas ao perfil",
+    situacao: "As visitas ao perfil mantêm-se estáveis, com espaço para crescer mais.",
+    solucao: "Pensar em conteúdos que direcionem ativamente o público para visitar o perfil.",
+  },
+];
+
 const RECOMMENDATIONS = [
   {
     icon: Video,
@@ -410,7 +488,8 @@ const RECOMMENDATIONS = [
 ];
 
 const NAV = [
-  { id: "redes-sociais", label: "Resultados Redes Sociais", icon: BarChart3 },
+  { id: "resumo-mensal", label: "Resumo Mensal", icon: FileText },
+  { id: "redes-sociais", label: "Resultados Detalhados", icon: BarChart3 },
   { id: "acoes-mes", label: "Ações MKT360 (Maio - Junho)", icon: ListChecks },
   { id: "plano-anual", label: "Planeamento", icon: CalendarRange },
   { id: "proximos-passos", label: "Próximos Passos", icon: Rocket },
@@ -902,6 +981,34 @@ const PRODUCAO_BENEFICIOS = [
   "Criar uma biblioteca de conteúdos para utilização futura",
 ];
 
+function MiniTrendCard({ nome, cor, data, dominio }) {
+  const crescimento = Math.round(((data[2].valor - data[0].valor) / data[0].valor) * 100);
+  return (
+    <div style={{ background: surface, border: `1px solid ${border}`, borderRadius: 16, padding: "18px 18px 6px" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+          <span style={{ width: 9, height: 9, borderRadius: "50%", background: cor }} />
+          <span style={{ fontFamily: display, fontSize: 13, fontWeight: 700, color: ink }}>{nome}</span>
+        </div>
+        <span style={{ fontFamily: body, fontSize: 11.5, fontWeight: 700, color: cor }}>+{crescimento}%</span>
+      </div>
+      <ResponsiveContainer width="100%" height={150}>
+        <LineChart data={data} margin={{ top: 24, right: 14, left: 14, bottom: 0 }}>
+          <XAxis dataKey="periodo" tick={{ fontSize: 10.5, fontFamily: body, fill: mutedSoft }} axisLine={{ stroke: border }} tickLine={false} />
+          <YAxis hide domain={dominio} />
+          <Tooltip
+            formatter={(v) => [fmt(v), nome]}
+            contentStyle={{ fontFamily: body, fontSize: 12, borderRadius: 10, border: `1px solid ${border}`, boxShadow: "0 4px 16px rgba(15,23,42,0.06)" }}
+          />
+          <Line type="monotone" dataKey="valor" stroke={cor} strokeWidth={2.5} dot={{ r: 4, fill: cor, strokeWidth: 0 }} activeDot={{ r: 6 }}>
+            <LabelList dataKey="valor" position="top" formatter={fmt} style={{ fontFamily: body, fontSize: 11, fontWeight: 700, fill: ink }} />
+          </Line>
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
 function PageHeader({ title, subtitle, badge }) {
   return (
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 32, flexWrap: "wrap", gap: 16 }}>
@@ -1123,6 +1230,22 @@ export default function MarketingDashboard() {
   const [clinicPeriod, setClinicPeriod] = useState("Jun/2026");
   const [activeTab, setActiveTab] = useState("boas-vindas");
   const [selectedMonth, setSelectedMonth] = useState(CURRENT_MONTH_ID);
+  const [metricaResumo, setMetricaResumo] = useState("alcance");
+  const [pdfMode, setPdfMode] = useState(false);
+
+  const exportExecutivePdf = () => {
+    setPdfMode(true);
+    setTimeout(() => {
+      window.dispatchEvent(new Event("resize"));
+      setTimeout(() => window.print(), 200);
+    }, 50);
+  };
+
+  useEffect(() => {
+    const reset = () => setPdfMode(false);
+    window.addEventListener("afterprint", reset);
+    return () => window.removeEventListener("afterprint", reset);
+  }, []);
 
   const clinica = getClinicStats(clinicUnit, clinicPeriod);
   const taxaAtendimentoGeral = clinica.agendadas > 0 ? (clinica.realizadas / clinica.agendadas) * 100 : 0;
@@ -1156,6 +1279,7 @@ export default function MarketingDashboard() {
         }
       `}</style>
 
+      <div className="app-content" style={{ display: pdfMode ? "none" : "block" }}>
       {/* menu fixo */}
       <div className="no-print" style={{ position: "sticky", top: 0, zIndex: 40, background: "rgba(250,251,252,0.92)", backdropFilter: "blur(10px)", borderBottom: `1px solid ${border}` }}>
         <div style={{ maxWidth: 1180, margin: "0 auto", padding: "14px 32px", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 14 }}>
@@ -1207,24 +1331,244 @@ export default function MarketingDashboard() {
               a qualquer momento.
             </p>
 
-            <button onClick={() => goTo("redes-sociais")} style={{
-              fontFamily: body, fontSize: 14.5, fontWeight: 700, color: "#fff", background: blue,
-              border: "none", borderRadius: 999, padding: "15px 34px", cursor: "pointer", marginTop: 36,
-              display: "inline-flex", alignItems: "center", gap: 8, boxShadow: "0 10px 24px rgba(37,99,235,0.3)"
-            }}>
-              Ver relatório <ChevronRight size={17} />
-            </button>
-
-            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 10, marginTop: 48 }}>
-              {NAV.map(item => (
-                <span key={item.id} style={{
-                  display: "inline-flex", alignItems: "center", gap: 7, fontFamily: body, fontSize: 12, fontWeight: 600,
-                  color: muted, background: "#fff", border: `1px solid ${border}`, padding: "8px 15px", borderRadius: 999
-                }}>
-                  <item.icon size={13} color={blue} /> {item.label}
-                </span>
-              ))}
+            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 12, marginTop: 36 }}>
+              <button onClick={() => goTo("resumo-mensal")} style={{
+                fontFamily: body, fontSize: 14.5, fontWeight: 700, color: "#fff", background: blue,
+                border: "none", borderRadius: 999, padding: "15px 34px", cursor: "pointer",
+                display: "inline-flex", alignItems: "center", gap: 8, boxShadow: "0 10px 24px rgba(37,99,235,0.3)"
+              }}>
+                Ver Resumo Mensal <ChevronRight size={17} />
+              </button>
+              <button onClick={() => goTo("redes-sociais")} style={{
+                fontFamily: body, fontSize: 14.5, fontWeight: 700, color: blue, background: blueSoft,
+                border: `1px solid ${blueLine}`, borderRadius: 999, padding: "15px 34px", cursor: "pointer",
+                display: "inline-flex", alignItems: "center", gap: 8
+              }}>
+                Resultados Detalhados <ChevronRight size={17} />
+              </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===================== ABA · RESUMO MENSAL ===================== */}
+      {activeTab === "resumo-mensal" && (
+        <div style={{ padding: "32px 32px 0" }}>
+          <div style={{ maxWidth: 1180, margin: "0 auto" }}>
+            <PageHeader
+              title="Resumo Mensal"
+              subtitle="Uma visão geral do mês, para ler em poucos minutos. Cada um dos menus acima aprofunda uma parte diferente deste resumo."
+              badge="JUNHO 2026"
+            />
+
+            <div className="no-print" style={{ display: "flex", justifyContent: "flex-end", marginTop: -20, marginBottom: 28 }}>
+              <button onClick={exportExecutivePdf} style={{
+                fontFamily: body, fontSize: 12.5, fontWeight: 600, padding: "9px 16px", borderRadius: 9,
+                border: `1px solid ${border}`, cursor: "pointer", display: "flex", alignItems: "center", gap: 7,
+                background: "#fff", color: muted
+              }}>
+                <Download size={14} /> Exportar resumo executivo (PDF)
+              </button>
+            </div>
+
+            {/* ===== CARD GRANDE 1 · RESULTADO GERAL ===== */}
+            <SectionTitle eyebrow="Resumo do resultado" large>Resultado geral</SectionTitle>
+            <Caption wide>Os principais indicadores de redes sociais, comparados em três momentos, mês a mês e face à operação da clínica.</Caption>
+            <div style={{
+              background: `linear-gradient(160deg, #EEF3FF 0%, #F6F9FF 55%, #FBFDFF 100%)`,
+              border: `1px solid ${blueLine}`, borderRadius: 26, padding: "30px 30px 8px", marginBottom: 40, position: "relative", overflow: "hidden"
+            }}>
+              <div style={{
+                position: "absolute", top: -70, right: -60, width: 260, height: 260, borderRadius: "50%",
+                background: "rgba(37,99,235,0.14)", filter: "blur(50px)", pointerEvents: "none"
+              }} />
+              <div style={{ position: "relative" }}>
+
+                <div style={{ background: "#fff", border: `1px solid ${border}`, borderRadius: 16, overflow: "hidden", marginBottom: 20 }}>
+                  <div style={{ overflowX: "auto" }}>
+                    <table style={{ width: "100%", borderCollapse: "collapse", fontFamily: body, fontSize: 13.5 }}>
+                      <thead>
+                        <tr style={{ background: "#F7F9FC" }}>
+                          {["Indicador", "Baseline (Jan)", "Mês atual", "Acumulado (Fev - Jun)"].map((h, i) => (
+                            <th key={h} style={{
+                              textAlign: i === 0 ? "left" : "right", padding: "13px 18px", color: muted,
+                              fontWeight: 600, fontSize: 12, textTransform: "uppercase", letterSpacing: "0.03em",
+                              borderBottom: `1px solid ${border}`
+                            }}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {[
+                          { nome: "Visualizações", b: baseline.visualizacoes, a: current.visualizacoes, t: totals.visualizacoes },
+                          { nome: "Alcance", b: baseline.alcance, a: current.alcance, t: totals.alcance },
+                          { nome: "Interações", b: baseline.interacoes, a: current.interacoes, t: totals.interacoes },
+                          { nome: "Visitas ao perfil", b: baseline.visitasPerfil, a: current.visitasPerfil, t: totals.visitasPerfil },
+                        ].map(r => (
+                          <tr key={r.nome} style={{ borderBottom: `1px solid ${border}` }}>
+                            <td style={{ padding: "13px 18px", fontWeight: 600, color: ink }}>{r.nome}</td>
+                            <td style={{ padding: "13px 18px", textAlign: "right", fontVariantNumeric: "tabular-nums", color: mutedSoft }}>{fmt(r.b)}</td>
+                            <td style={{ padding: "13px 18px", textAlign: "right", fontVariantNumeric: "tabular-nums", color: ink, fontWeight: 700 }}>{fmt(r.a)}</td>
+                            <td style={{ padding: "13px 18px", textAlign: "right", fontVariantNumeric: "tabular-nums", color: blue, fontWeight: 700 }}>{fmt(r.t)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 14, marginBottom: 20 }}>
+                  {TRAJETORIA_METRICAS.map(m => <MiniTrendCard key={m.key} {...m} />)}
+                </div>
+
+                {/* evolução mensal com seletor */}
+                <div style={{ background: "#fff", border: `1px solid ${border}`, borderRadius: 16, padding: "20px 20px 8px", marginBottom: 16 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10, marginBottom: 4 }}>
+                    <div style={{ fontFamily: display, fontSize: 13.5, fontWeight: 700, color: ink }}>Evolução mensal</div>
+                    <div style={{ display: "flex", gap: 5, background: "#F1F4F8", borderRadius: 10, padding: 4 }}>
+                      {METRICAS_RESUMO.map(m => (
+                        <button key={m.key} onClick={() => setMetricaResumo(m.key)} style={{
+                          fontFamily: body, fontSize: 11.5, fontWeight: 600, padding: "6px 11px", borderRadius: 7,
+                          border: "none", cursor: "pointer",
+                          background: metricaResumo === m.key ? blue : "transparent",
+                          color: metricaResumo === m.key ? "#fff" : muted
+                        }}>
+                          {m.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <ResponsiveContainer width="100%" height={230}>
+                    <AreaChart
+                      data={[{ short: "Baseline", [metricaResumo]: baseline[metricaResumo] }, ...monthly]}
+                      margin={{ top: 10, right: 16, left: -12, bottom: 0 }}
+                    >
+                      <defs>
+                        <linearGradient id="fillResumoMensal" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor={blue} stopOpacity={0.18} />
+                          <stop offset="100%" stopColor={blue} stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid stroke={border} vertical={false} />
+                      <XAxis dataKey="short" tick={{ fontSize: 12, fontFamily: body, fill: mutedSoft }} axisLine={{ stroke: border }} tickLine={false} />
+                      <YAxis hide />
+                      <Tooltip
+                        formatter={(v) => [fmt(v), METRICAS_RESUMO.find(m => m.key === metricaResumo)?.label]}
+                        contentStyle={{ fontFamily: body, fontSize: 12.5, borderRadius: 10, border: `1px solid ${border}`, boxShadow: "0 4px 16px rgba(15,23,42,0.06)" }}
+                      />
+                      <Area type="monotone" dataKey={metricaResumo} stroke={blue} strokeWidth={2.5} fill="url(#fillResumoMensal)" dot={{ r: 4, fill: blue, strokeWidth: 0 }} activeDot={{ r: 6 }} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+
+                <div style={{
+                  display: "flex", alignItems: "flex-start", gap: 10, background: "#FFFBEB", border: "1px solid #FDE9B0",
+                  borderLeft: "4px solid #D69E2E", borderRadius: 12, padding: "14px 18px", marginBottom: 20
+                }}>
+                  <AlertTriangle size={16} color="#B7791F" style={{ flexShrink: 0, marginTop: 2 }} />
+                  <p style={{ fontFamily: body, fontSize: 12.5, color: "#7B5B10", margin: 0, lineHeight: 1.6 }}>
+                    Junho, além de ser historicamente um mês de menor procura, teve o algoritmo afetado pelo Mundial de
+                    futebol em alta nas redes sociais, o que reduziu o alcance de conteúdos sobre outros temas. Os
+                    números já estão a recuperar em julho.
+                  </p>
+                </div>
+
+                <div style={{ marginBottom: 12 }}>
+                  <div style={{ fontFamily: display, fontSize: 13.5, fontWeight: 700, color: ink, marginBottom: 4 }}>Para além das redes sociais</div>
+                  <div style={{ fontFamily: body, fontSize: 11.5, color: mutedSoft }}>Como isto se reflete na operação real das clínicas.</div>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14, marginBottom: 24 }}>
+                  <div style={{ background: "#fff", border: `1px solid ${border}`, borderRadius: 16, padding: "20px 22px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                      <span style={{ fontFamily: body, fontSize: 11, fontWeight: 700, color: blue, textTransform: "uppercase", letterSpacing: "0.04em" }}>Taxa de atendimento</span>
+                      <span style={{ fontFamily: body, fontSize: 10, fontWeight: 600, color: mutedSoft }}>Jun 2026</span>
+                    </div>
+                    <div style={{ fontFamily: body, fontSize: 30, fontWeight: 800, color: ink }}>{taxaAtendimentoGeral.toFixed(1)}%</div>
+                  </div>
+                  <div style={{ background: "#fff", border: `1px solid ${border}`, borderRadius: 16, padding: "20px 22px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                      <span style={{ fontFamily: body, fontSize: 11, fontWeight: 700, color: blue, textTransform: "uppercase", letterSpacing: "0.04em" }}>Marcações feitas</span>
+                      <span style={{ fontFamily: body, fontSize: 10, fontWeight: 600, color: mutedSoft }}>Jun 2026</span>
+                    </div>
+                    <div style={{ fontFamily: body, fontSize: 30, fontWeight: 800, color: ink }}>{fmt(clinica.agendadas)}</div>
+                  </div>
+                  <div style={{ background: "#fff", border: `1px solid ${border}`, borderRadius: 16, padding: "20px 22px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                      <span style={{ fontFamily: body, fontSize: 11, fontWeight: 700, color: green, textTransform: "uppercase", letterSpacing: "0.04em" }}>Atendimentos Realizados</span>
+                      <span style={{ fontFamily: body, fontSize: 10, fontWeight: 600, color: mutedSoft }}>Jun 2026</span>
+                    </div>
+                    <div style={{ fontFamily: body, fontSize: 30, fontWeight: 800, color: ink }}>{fmt(clinica.realizadas)}</div>
+                  </div>
+                  <div style={{ background: "#fff", border: `1px solid ${border}`, borderRadius: 16, padding: "20px 22px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                      <span style={{ fontFamily: body, fontSize: 11, fontWeight: 700, color: "#B7791F", textTransform: "uppercase", letterSpacing: "0.04em" }}>Oportunidade</span>
+                      <span style={{ fontFamily: body, fontSize: 10, fontWeight: 600, color: mutedSoft }}>Jun 2026</span>
+                    </div>
+                    <div style={{ fontFamily: body, fontSize: 30, fontWeight: 800, color: ink, marginBottom: 6 }}>{fmt(oportunidadeRecuperacao)}</div>
+                    <div style={{ fontFamily: body, fontSize: 11, color: muted, lineHeight: 1.4 }}>Clientes que cancelaram e não remarcaram</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ===== CARD GRANDE 2 · SITUAÇÕES ENCONTRADAS ===== */}
+            <SectionTitle eyebrow="Situações encontradas" large>Situações encontradas em Junho</SectionTitle>
+            <Caption wide>O que está a travar mais, e o que estamos a fazer sobre isso.</Caption>
+            <div style={{
+              background: `linear-gradient(160deg, #FFFBEB 0%, #FFF8EE 55%, #FFFDFA 100%)`,
+              border: "1px solid #FDE9B0", borderRadius: 26, padding: "30px 30px", marginBottom: 40, position: "relative", overflow: "hidden"
+            }}>
+              <div style={{
+                position: "absolute", top: -70, right: -60, width: 260, height: 260, borderRadius: "50%",
+                background: "rgba(214,158,46,0.14)", filter: "blur(50px)", pointerEvents: "none"
+              }} />
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 14, position: "relative" }}>
+                {DESAFIOS.map(d => (
+                  <div key={d.titulo} style={{ background: "#fff", border: `1px solid ${border}`, borderRadius: 16, padding: "20px 22px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: 14 }}>
+                      <div style={{ width: 30, height: 30, borderRadius: 9, background: "#FEF6E7", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <d.icon size={14} color="#B7791F" strokeWidth={2} />
+                      </div>
+                      <span style={{ fontFamily: display, fontSize: 13.5, fontWeight: 700, color: ink }}>{d.titulo}</span>
+                    </div>
+                    <p style={{ fontFamily: body, fontSize: 12, color: muted, lineHeight: 1.55, margin: "0 0 10px" }}>{d.situacao}</p>
+                    <div style={{ display: "flex", alignItems: "flex-start", gap: 7 }}>
+                      <ArrowRight size={13} color={blue} style={{ flexShrink: 0, marginTop: 2 }} />
+                      <span style={{ fontFamily: body, fontSize: 12, color: blue, fontWeight: 600, lineHeight: 1.5 }}>{d.solucao}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* ===== CARD GRANDE 3 · PRÓXIMOS PASSOS ===== */}
+            <SectionTitle eyebrow="A decidir" large>Próximos passos prioritários</SectionTitle>
+            <Caption>As decisões mais urgentes. A lista completa está na página Próximos Passos.</Caption>
+            <div style={{
+              background: `linear-gradient(160deg, ${violetSoft} 0%, #FBF9FF 55%, #FFFFFF 100%)`,
+              border: `1px solid ${violetLine}`, borderRadius: 26, padding: "30px 30px", marginBottom: 16, position: "relative", overflow: "hidden"
+            }}>
+              <div style={{
+                position: "absolute", top: -70, right: -60, width: 260, height: 260, borderRadius: "50%",
+                background: "rgba(124,58,237,0.14)", filter: "blur(50px)", pointerEvents: "none"
+              }} />
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12, position: "relative" }}>
+                {RECOMMENDATIONS.filter(r => ["Reativar os anúncios", "Mais reels de topo de funil", "Recuperação de pacientes cancelados"].includes(r.title)).map(r => (
+                  <div key={r.title} style={{ display: "flex", alignItems: "center", gap: 11, background: "#fff", border: `1px solid ${border}`, borderRadius: 14, padding: "16px 18px" }}>
+                    <div style={{ width: 32, height: 32, borderRadius: 9, background: violetSoft, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <r.icon size={15} color={violet} strokeWidth={2} />
+                    </div>
+                    <span style={{ fontFamily: body, fontSize: 13, fontWeight: 700, color: ink, lineHeight: 1.3 }}>{r.title}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div style={{ maxWidth: 1180, margin: "0 auto" }}>
+            <PageNav>
+              <NextSectionButton label="Ver relatório detalhado" onClick={() => goTo("redes-sociais")} />
+              <NextSectionButton label="Ver todos os próximos passos" onClick={() => goTo("proximos-passos")} />
+            </PageNav>
           </div>
         </div>
       )}
@@ -1373,6 +1717,45 @@ export default function MarketingDashboard() {
               </tbody>
             </table>
           </div>
+        </div>
+
+        <div style={{ background: surface, border: `1px solid ${border}`, borderRadius: 16, padding: "20px 20px 8px", marginBottom: 60 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 10, marginBottom: 4 }}>
+            <div style={{ fontFamily: display, fontSize: 13.5, fontWeight: 700, color: ink }}>Evolução mensal</div>
+            <div style={{ display: "flex", gap: 5, background: "#F1F4F8", borderRadius: 10, padding: 4 }}>
+              {METRICAS_RESUMO.map(m => (
+                <button key={m.key} onClick={() => setMetricaResumo(m.key)} style={{
+                  fontFamily: body, fontSize: 11.5, fontWeight: 600, padding: "6px 11px", borderRadius: 7,
+                  border: "none", cursor: "pointer",
+                  background: metricaResumo === m.key ? blue : "transparent",
+                  color: metricaResumo === m.key ? "#fff" : muted
+                }}>
+                  {m.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <ResponsiveContainer width="100%" height={230}>
+            <AreaChart
+              data={[{ short: "Baseline", [metricaResumo]: baseline[metricaResumo] }, ...monthly]}
+              margin={{ top: 10, right: 16, left: -12, bottom: 0 }}
+            >
+              <defs>
+                <linearGradient id="fillEvolucaoDetalhado" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={blue} stopOpacity={0.18} />
+                  <stop offset="100%" stopColor={blue} stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid stroke={border} vertical={false} />
+              <XAxis dataKey="short" tick={{ fontSize: 12, fontFamily: body, fill: mutedSoft }} axisLine={{ stroke: border }} tickLine={false} />
+              <YAxis hide />
+              <Tooltip
+                formatter={(v) => [fmt(v), METRICAS_RESUMO.find(m => m.key === metricaResumo)?.label]}
+                contentStyle={{ fontFamily: body, fontSize: 12.5, borderRadius: 10, border: `1px solid ${border}`, boxShadow: "0 4px 16px rgba(15,23,42,0.06)" }}
+              />
+              <Area type="monotone" dataKey={metricaResumo} stroke={blue} strokeWidth={2.5} fill="url(#fillEvolucaoDetalhado)" dot={{ r: 4, fill: blue, strokeWidth: 0 }} activeDot={{ r: 6 }} />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
 
         <div style={{
@@ -1869,7 +2252,7 @@ export default function MarketingDashboard() {
           </div>
           <div style={{ maxWidth: 1180, margin: "0 auto" }}>
             <PageNav>
-              <PrevSectionButton label="Visualizar Relatório Redes Sociais" onClick={() => goTo("redes-sociais")} />
+              <PrevSectionButton label="Visualizar Resultados Detalhados" onClick={() => goTo("redes-sociais")} />
               <NextSectionButton label="Ver plano de campanhas anual" onClick={() => goTo("plano-anual")} />
             </PageNav>
           </div>
@@ -2338,6 +2721,88 @@ export default function MarketingDashboard() {
         <div style={{ textAlign: "center", paddingTop: 20 }}>
           <span style={{ fontFamily: body, fontSize: 11.5, color: mutedSoft }}>Desenvolvido por <strong style={{ color: muted }}>Your Vision Agency</strong></span>
         </div>
+      </div>
+      </div>
+
+      {/* documento executivo, só visível quando exportado em pdf */}
+      <div className="exec-doc" style={{
+        position: pdfMode ? "static" : "fixed",
+        left: pdfMode ? "auto" : "-9999px",
+        top: pdfMode ? "auto" : 0,
+        width: pdfMode ? "auto" : "800px",
+        fontFamily: "Georgia, 'Times New Roman', serif", color: "#1a1a1a", padding: "50px 60px", maxWidth: 820, margin: "0 auto"
+      }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", borderBottom: "2px solid #1a1a1a", paddingBottom: 16, marginBottom: 28 }}>
+          <div>
+            <div style={{ fontSize: 20, fontWeight: 700 }}>Clínica Sorridente</div>
+            <div style={{ fontSize: 13, color: "#555" }}>Resumo Executivo Mensal</div>
+          </div>
+          <div style={{ textAlign: "right", fontSize: 12, color: "#555" }}>
+            <div>Junho de 2026</div>
+            <div>Your Vision Agency</div>
+          </div>
+        </div>
+
+        <h2 style={{ fontSize: 16, marginBottom: 6 }}>1. Resultado geral</h2>
+        <p style={{ fontSize: 13, lineHeight: 1.8, marginBottom: 6 }}>
+          Ao longo de junho de 2026, a Clínica Sorridente registou {fmt(current.visualizacoes)} visualizações e {fmt(current.alcance)} de
+          alcance nas redes sociais, valores que comparam com um baseline de {fmt(baseline.visualizacoes)} visualizações e {fmt(baseline.alcance)} de
+          alcance registado antes do início do Marketing 360, em janeiro. Desde então, entre fevereiro e junho, o projeto acumulou
+          {" "}{fmt(totals.visualizacoes)} visualizações e {fmt(totals.alcance)} de alcance no total, um crescimento acumulado de +{growth.alcance}%
+          face ao ponto de partida.
+        </p>
+        <p style={{ fontSize: 13, lineHeight: 1.8, marginBottom: 6 }}>
+          As interações cresceram de forma ainda mais expressiva, com um total acumulado de {fmt(totals.interacoes)}, o equivalente a um
+          crescimento de +{growth.interacoes}% face ao baseline. As visitas ao perfil somaram {fmt(totals.visitasPerfil)} no mesmo período,
+          um crescimento de +{growth.visitasPerfil}%. Todas as metas contratuais de alcance, visualizações, interações, visitas ao perfil e
+          alcance de novos utilizadores foram alcançadas; o crescimento da comunidade de seguidores e o CTR de tráfego pago continuam
+          em evolução.
+        </p>
+        <p style={{ fontSize: 13, lineHeight: 1.8, marginBottom: 20 }}>
+          Do lado da operação da clínica, junho registou {fmt(clinica.agendadas)} marcações e {fmt(clinica.realizadas)} atendimentos
+          realizados, uma taxa de atendimento de {taxaAtendimentoGeral.toFixed(1)}%. Identificam-se ainda {fmt(oportunidadeRecuperacao)} clientes
+          que cancelaram consulta e ainda não remarcaram, a principal oportunidade de recuperação em aberto.
+        </p>
+
+        <div style={{ marginBottom: 24 }}>
+          <ResponsiveContainer width="100%" height={180}>
+            <AreaChart data={[{ short: "Baseline", alcance: baseline.alcance }, ...monthly]} margin={{ top: 8, right: 10, left: 0, bottom: 0 }}>
+              <XAxis dataKey="short" tick={{ fontSize: 11, fill: "#555" }} axisLine={{ stroke: "#ccc" }} tickLine={false} />
+              <YAxis hide />
+              <Line type="monotone" dataKey="alcance" stroke="#1a1a1a" strokeWidth={2} dot={{ r: 3 }} />
+            </AreaChart>
+          </ResponsiveContainer>
+          <div style={{ fontSize: 11, color: "#777", textAlign: "center", marginTop: 4 }}>Evolução do alcance, do baseline a junho de 2026</div>
+        </div>
+
+        <h2 style={{ fontSize: 16, marginBottom: 6 }}>2. Situações encontradas e soluções propostas</h2>
+        <p style={{ fontSize: 13, lineHeight: 1.8, marginBottom: 10 }}>
+          Foram identificadas {DESAFIOS.length} situações a acompanhar de perto no próximo período:
+        </p>
+        <ol style={{ fontSize: 13, lineHeight: 1.9, paddingLeft: 20, marginBottom: 20 }}>
+          {DESAFIOS.map(d => (
+            <li key={d.titulo} style={{ marginBottom: 8 }}>
+              <strong>{d.titulo}.</strong> {d.situacao} {d.solucao}
+            </li>
+          ))}
+        </ol>
+
+        <h2 style={{ fontSize: 16, marginBottom: 6 }}>3. Próximos passos e decisões necessárias</h2>
+        <p style={{ fontSize: 13, lineHeight: 1.8, marginBottom: 10 }}>
+          As três prioridades para o próximo mês, que dependem de alinhamento com a direção da clínica, são:
+        </p>
+        <ol style={{ fontSize: 13, lineHeight: 1.9, paddingLeft: 20, marginBottom: 24 }}>
+          {RECOMMENDATIONS.filter(r => ["Reativar os anúncios", "Mais reels de topo de funil", "Recuperação de pacientes cancelados"].includes(r.title)).map(r => (
+            <li key={r.title} style={{ marginBottom: 8 }}>
+              <strong>{r.title}.</strong> {r.objetivo} {r.acao}
+            </li>
+          ))}
+        </ol>
+
+        <p style={{ fontSize: 11.5, color: "#777", borderTop: "1px solid #ddd", paddingTop: 14, marginTop: 30 }}>
+          Documento gerado a partir do relatório digital de Marketing 360 da Clínica Sorridente, desenvolvido pela Your Vision Agency.
+          Para mais detalhe sobre qualquer um dos pontos aqui referidos, consultar o relatório completo.
+        </p>
       </div>
     </div>
   );
